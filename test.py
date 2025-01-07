@@ -21,11 +21,18 @@ def chat_with_deepseek(prompt):
                 {"role": "system", "content": "You are a helpful assistant"},
                 {"role": "user", "content": prompt}
             ],
-            stream=False
+            stream=True  # 스트리밍 활성화
         )
         
-        # 응답 반환
-        return response.choices[0].message.content
+        # 스트리밍 응답 처리
+        full_response = ""
+        for chunk in response:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                print(content, end='', flush=True)
+                full_response += content
+        print()  # 줄바꿈을 위해 추가
+        return full_response
     except Exception as e:
         return f"오류가 발생했습니다: {str(e)}"
 
